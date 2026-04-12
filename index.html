@@ -20,7 +20,7 @@
 body{font-family:var(--font-body);background:var(--white);color:var(--text);overflow-x:hidden;}
 
 /* ── PAGE ROUTER ── */
-.page{display:none !important;min-height:100vh;} .page.active{display:block !important;} #admin-panel.active{display:flex !important;}
+.page{display:none;min-height:100vh;}
 
 
 /* ── ADMIN LOGIN ── */
@@ -196,7 +196,7 @@ tr:hover td{background:#faf8f4;}
 <body>
 
 <!-- ══════════════ ADMIN LOGIN ══════════════ -->
-<div id="admin-login" class="page active">
+<div id="admin-login" class="page" style="display:block;">
   <div class="al-box">
     <h1>Aavarani Jewels</h1>
     <p>Admin Portal — Aavarani Jewels</p>
@@ -208,7 +208,7 @@ tr:hover td{background:#faf8f4;}
 </div>
 
 <!-- ══════════════ ADMIN PANEL ══════════════ -->
-<div id="admin-panel" class="page">
+<div id="admin-panel" class="page" style="display:none;">
   <div class="admin-sidebar">
     <div class="sidebar-logo"><h2>✦ Aavarani Jewels</h2><div><span>Admin Panel</span></div></div>
     <div class="sidebar-nav">
@@ -332,7 +332,7 @@ tr:hover td{background:#faf8f4;}
 </div>
 
 <!-- ══════════════ USER STORE ══════════════ -->
-<div id="store" class="page">
+<div id="store" class="page" style="display:none;">
   <div class="store-top">
     <div class="store-topbar">
       <div class="store-logo">✦ Aavarani Jewels</div>
@@ -452,20 +452,14 @@ let bag=[], wishlist=new Set(), activeGender='All', activeCat='All', editingId=n
 
 // ═══════════ ROUTING ═══════════
 function showPage(id){
-  // Hide all pages
-  document.querySelectorAll('.page').forEach(function(p){
-    p.classList.remove('active');
-    p.style.display='none';
-  });
-  // Show target page
-  var target = document.getElementById(id);
-  if(!target){ console.error('Page not found: '+id); return; }
-  target.classList.add('active');
-  if(id==='admin-panel'){
-    target.style.display='flex';
-  } else {
-    target.style.display='block';
+  var pages = ['admin-login','admin-panel','store'];
+  for(var i=0;i<pages.length;i++){
+    var el = document.getElementById(pages[i]);
+    if(el) el.style.display='none';
   }
+  var target = document.getElementById(id);
+  if(!target){ alert('Error: page '+id+' not found'); return; }
+  target.style.display = (id==='admin-panel') ? 'flex' : 'block';
   window.scrollTo(0,0);
 }
 function goStore(){showPage('store');renderStore();}
@@ -730,17 +724,10 @@ function showToast(msg){
   setTimeout(()=>t.classList.remove('show'),2500);
 }
 
-// Init - wait for DOM to be ready
-function init(){
+// Init
+document.addEventListener('DOMContentLoaded', function(){
   renderBag();
-  // Make sure only admin-login is visible on start
-  showPage('admin-login');
-}
-if(document.readyState==='loading'){
-  document.addEventListener('DOMContentLoaded', init);
-} else {
-  init();
-}
+});
 </script>
 </body>
 </html>
