@@ -4,7 +4,10 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Aavarani Jewels — Imitation Jewellery</title>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'"/>
+<noscript><link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/></noscript>
 <style>
 :root{
   --gold:#d4a0b0;--gold-light:#f0c0d0;--gold-pale:#fdeef3;
@@ -17,8 +20,8 @@
 body{font-family:var(--font-body);background:var(--white);color:var(--text);overflow-x:hidden;}
 
 /* ── PAGE ROUTER ── */
-.page{display:none;min-height:100vh;}
-.page.active{display:block;}
+.page{display:none !important;min-height:100vh;} .page.active{display:block !important;} #admin-panel.active{display:flex !important;}
+
 
 /* ── ADMIN LOGIN ── */
 #admin-login{background:var(--deep);display:flex;align-items:center;justify-content:center;min-height:100vh;}
@@ -197,8 +200,8 @@ tr:hover td{background:#faf8f4;}
   <div class="al-box">
     <h1>Aavarani Jewels</h1>
     <p>Admin Portal — Aavarani Jewels</p>
-    <input type="text" id="al-user" placeholder="Username" value="admin"/>
-    <input type="password" id="al-pass" placeholder="Password" value="admin123"/>
+    <input type="text" id="al-user" placeholder="Username" value="admin" onkeydown="if(event.key==='Enter')adminLogin()"/>
+    <input type="password" id="al-pass" placeholder="Password" value="admin123" onkeydown="if(event.key==='Enter')adminLogin()"/>
     <button class="btn-gold" onclick="adminLogin()">Sign In to Admin</button>
     <div class="al-link" style="margin-top:14px;"><a onclick="goStore()">→ Go to Store (Customer View)</a></div>
   </div>
@@ -449,10 +452,21 @@ let bag=[], wishlist=new Set(), activeGender='All', activeCat='All', editingId=n
 
 // ═══════════ ROUTING ═══════════
 function showPage(id){
-  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-  if(id==='admin-panel') document.getElementById('admin-panel').style.display='flex';
-  else document.getElementById('admin-panel').style.display='none';
+  // Hide all pages
+  document.querySelectorAll('.page').forEach(function(p){
+    p.classList.remove('active');
+    p.style.display='none';
+  });
+  // Show target page
+  var target = document.getElementById(id);
+  if(!target){ console.error('Page not found: '+id); return; }
+  target.classList.add('active');
+  if(id==='admin-panel'){
+    target.style.display='flex';
+  } else {
+    target.style.display='block';
+  }
+  window.scrollTo(0,0);
 }
 function goStore(){showPage('store');renderStore();}
 function adminLogout(){showPage('admin-login');}
@@ -716,8 +730,17 @@ function showToast(msg){
   setTimeout(()=>t.classList.remove('show'),2500);
 }
 
-// Init
-renderBag();
+// Init - wait for DOM to be ready
+function init(){
+  renderBag();
+  // Make sure only admin-login is visible on start
+  showPage('admin-login');
+}
+if(document.readyState==='loading'){
+  document.addEventListener('DOMContentLoaded', init);
+} else {
+  init();
+}
 </script>
 </body>
 </html>
